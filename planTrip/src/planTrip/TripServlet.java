@@ -7,7 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import java.sql.*;
 /**
  * Servlet implementation class TripServlet
  */
@@ -40,9 +40,18 @@ public class TripServlet extends HttpServlet {
 		}
 		//create the trip object
 		Trip loc = new Trip(location, tripCost, fund, withdrawal, expect);
+		PreparedStatement preparedstatement = null;
+		final String USER = "root";
+		final String PASS = "password";
+		String url = "jdbc:mysql://localhost:3306/";
+		String db = "trips";
 		try{
 			int acount=0;
 			Trip delete = null;
+			//register JDBC driver
+			Class.forName("com.mysql.jdbc.Driver");
+			//Connect to database
+			Connection myConn = DriverManager.getConnection(url+db, USER, PASS);
 			//iterate through each trip object in the arraylist
 			for(Object name: vacation.getDestinations()){
 				//create a duplicate of the trip object to test
@@ -63,15 +72,35 @@ public class TripServlet extends HttpServlet {
 				//add the trip to the arraylist
 				}else{
 					vacation.addDestination(loc);
+					//insert new query
+					String sql = "INSERT INTO destinations (location, time, cost, saving, withdrawal) VALUES " + "(?, ?, ?, ?, ?)";
+					preparedstatement = myConn.prepareStatement(sql);
+					preparedstatement.setString(1, loc.getLocation());
+					preparedstatement.setString(2, loc.getExpect());
+					preparedstatement.setDouble(3, loc.getTripCost());
+					preparedstatement.setDouble(4, loc.getFund());
+					preparedstatement.setDouble(5, loc.getWithdrawal());
+					//execute sql query
+					preparedstatement.executeUpdate();
+					preparedstatement.close();
+					myConn.close();
 				}	
 			}
 			//see if user wants to delete the trip
 			if((request.getParameter("bttn")).equals("Delete")){
 				//delete the trip from the arraylist
 				vacation.delDestination(delete);
+				//delete query
+				String sql = "DELETE FROM destinations WHERE location=" + "(?)";
+				preparedstatement = myConn.prepareStatement(sql);
+				preparedstatement.setString(1, loc.getLocation());
+				//execute sql query
+				preparedstatement.executeUpdate();
+				preparedstatement.close();
+				myConn.close();
 			}
 		}catch(Exception e){
-			System.out.println("error");
+			e.printStackTrace();
 		}
 		//allow for Trip.jsp to have access to the session that has the arraylist
 		request.getSession().setAttribute("triplist", vacation);
