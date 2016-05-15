@@ -26,20 +26,43 @@ public class TripServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//store the input trip location upper-case
-		String location = request.getParameter("location").toUpperCase();
-		double tripCost = Double.parseDouble(request.getParameter("tripCost"));
-		double fund = Double.parseDouble(request.getParameter("fund"));
-		double withdrawal = Double.parseDouble(request.getParameter("withdrawal"));
-		String expect = "";
-		
+		String location;
+		double tripCost;
+		double fund;
+		double withdrawal;
+		//tests to ensure valid inputs
+		if(request.getParameter("location") == ""){
+			location = "UNKNOWN";
+		}else{
+			location = request.getParameter("location").toUpperCase();
+		}
+		try{
+			tripCost = Double.parseDouble(request.getParameter("tripCost"));
+		}catch(Exception e){
+			tripCost = 0.0;
+		}
+		try{
+			fund = Double.parseDouble(request.getParameter("fund"));
+		}catch(Exception e){
+			fund = 0.0;
+		}
+		try{
+			withdrawal = Double.parseDouble(request.getParameter("withdrawal"));
+		}catch(Exception e){
+			withdrawal = 0.0;
+		}
 		Triplist vacation = (Triplist)request.getSession(true).getAttribute("triplist");
 		//check to see if the arraylist of trips has already been created
 		if(vacation == null){
 			vacation = new Triplist();
 		}
 		//create the trip object
-		Trip loc = new Trip(location, tripCost, fund, withdrawal, expect);
+		Trip loc = new Trip();
+		loc.setLocation(location);
+		loc.setTripCost(tripCost);
+		loc.setFund(fund);
+		loc.setWithdrawal(withdrawal);
+		loc.setExpect(location, tripCost, fund, withdrawal);
 		PreparedStatement preparedstatement = null;
 		final String USER = "root";
 		final String PASS = "password";
@@ -69,7 +92,7 @@ public class TripServlet extends HttpServlet {
 				//trip location already listed
 				if(acount > 0){
 					System.out.println("Trip already set");
-				//add the trip to the arraylist
+					//add the trip to the arraylist
 				}else{
 					vacation.addDestination(loc);
 					//insert new query
@@ -106,5 +129,4 @@ public class TripServlet extends HttpServlet {
 		request.getSession().setAttribute("triplist", vacation);
 		getServletContext().getRequestDispatcher("/Trip.jsp").forward(request, response);
 	}
-
 }

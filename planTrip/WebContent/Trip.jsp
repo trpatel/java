@@ -6,11 +6,15 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Plan Your Trip</title>
+<style type="text/css">
+	.page{ background-color: rgb(230,230,250); margin-top:-20px;  }
+	.body{ width:960px; height:1000px; background-color: white; }
+</style>
 </head>
-<body>
+<body class="page">
 <center>
+<div class="body">
 <h1>Trip Planner</h1>
-<br>
 <form action="/planTrip/Trip" method="post">
 <table>
 <tr>
@@ -33,12 +37,13 @@
 <td align="center"><input type="submit" name="bttn" value="Add"></td>
 <td align="center"><input type="submit" name="bttn" value="Delete"></td>
 </tr>
+<br>
 </table>
 </form>
 <br><br>
 <table border="2" cellspacing="2">
 <tbody>
-<tr><th align="center" valign="middle">Destination</th><th align="center" valign="middle">Anticipated Vacation</th>
+<tr><th align="center" valign="middle">Destination</th><th align="center" valign="middle">Anticipated Departure</th>
 	<th align="center" valign="middle">Total Cost</th><th align="center" valign="middle">Weekly Deposit</th>
 	<th align="center" valign="middle">Weekly Withdrawal</th></tr>
 
@@ -46,14 +51,15 @@
 <tr>
 <td><c:out value="${loc.location}"/></td>
 <td><c:out value="${loc.expect}"/></td>
-<td><c:out value="${loc.tripCost}"/></td>
-<td><c:out value="${loc.fund}"/></td>
-<td><c:out value="${loc.withdrawal}"/></td>
+<td align="right"><c:out value="${loc.tripCost}"/></td>
+<td align="right"><c:out value="${loc.fund}"/></td>
+<td align="right"><c:out value="${loc.withdrawal}"/></td>
 </tr>
 </c:forEach>
 
 </tbody>
 </table>
+</div>
 </center>
 </body>
 </html>
